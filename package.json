@@ -52,5 +52,6 @@
         "tree-sitter": {
             "optional": true
         }
-    }
+    },
+    "packageManager": "bun"
 }
