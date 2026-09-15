@@ -21,6 +21,10 @@ Issues, bug reports, and discussions should be created in the [main Klar repo](h
 
 Contributions should follow our [style guide](https://github.com/ProCode-Software/klar/blob/main/CONTRIBUTING.md#code-style) and [AI policy](https://github.com/ProCode-Software/klar/blob/main/CONTRIBUTING.md#using-ai) in the main Klar repo.
 
+### Formatting
+
+All files in your PRs should be properly formatted. Run [`oxfmt`](https://oxc.rs/docs/guide/usage/formatter.html) to format.
+
 ## License
 
 [Apache-2.0](./LICENSE)
