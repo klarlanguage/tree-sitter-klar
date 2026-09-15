@@ -23,7 +23,7 @@ Contributions should follow our [style guide](https://github.com/ProCode-Softwar
 
 ### Formatting
 
-All files in your PRs should be properly formatted. Run [`oxfmt`](https://oxc.rs/docs/guide/usage/formatter.html) to format.
+All source files (excluding generated files) in your PRs should be properly formatted. Run [`oxfmt`](https://oxc.rs/docs/guide/usage/formatter.html) to format.
 
 ## License
 
