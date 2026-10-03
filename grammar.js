@@ -36,31 +36,7 @@ const Precedence = {
     PrimaryType: 8, // Names
 }
 
-/**
- * @see https://github.com/ProCode-Software/klar/tree/main/internal/lexer/string.go
- * @param {any} $
- * @param {string} quoteStyle
- */
-const stringEscape = ($, quoteStyle) =>
-    token.immediate(
-        seq(
-            '\\',
-            choice(
-                alias(
-                    new RegExp(
-                        `[^\\\\befnrt${quoteStyle == '"' ? quoteStyle + '{' : quoteStyle}]`
-                    ),
-                    $.character_escape
-                ),
-                alias(/x[0-9A-Fa-f]/, $.hex_escape),
-                alias(/u\{[0-9A-Fa-f]{2,6}\}/, $.unicode_escape)
-            )
-        )
-    )
-
-/** @param {string} disallow */
-const stringTextFragment = disallow =>
-    token.immediate(prec(1, new RegExp(`[^${disallow}]+`)))
+let stringEscape, stringTextFragment
 
 export default grammar({
     name: 'klar',
@@ -381,6 +357,28 @@ export default grammar({
         parenthesized_expression: $ => seq('(', $.expression, ')'),
         enum_literal: $ => seq('.', $.identifier),
 
+        ...((stringEscape =
+            // See https://github.com/ProCode-Software/klar/tree/main/internal/lexer/string.go
+            /** @param {any} $ @param {string} quoteStyle */
+            ($, quoteStyle) =>
+                token.immediate(
+                    seq(
+                        '\\',
+                        choice(
+                            alias(
+                                new RegExp(
+                                    `[^\\\\befnrt${quoteStyle == '"' ? quoteStyle + '{' : quoteStyle}]`
+                                ),
+                                $.character_escape
+                            ),
+                            alias(/x[0-9A-Fa-f]/, $.hex_escape),
+                            alias(/u\{[0-9A-Fa-f]{2,6}\}/, $.unicode_escape)
+                        )
+                    )
+                )),
+        (stringTextFragment = /** @param {string} disallow */ disallow =>
+            token.immediate(prec(1, new RegExp(`[^${disallow}]+`)))),
+        []),
         // See https://github.com/ProCode-Software/klar/discussions/1
         string_literal: $ =>
             choice($.single_quoted_string, $.double_quoted_string, $.backquoted_string),
