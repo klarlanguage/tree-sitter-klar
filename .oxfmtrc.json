@@ -8,7 +8,7 @@
     "trailingComma": "es5",
     "useTabs": false,
     "sortPackageJson": true,
-    "ignorePatterns": [],
+    "ignorePatterns": ["src/*"],
     "insertFinalNewline": true,
     "sortImports": {
         "newlinesBetween": false,
