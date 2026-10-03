@@ -1,5 +1,5 @@
 LANGUAGE_NAME := tree-sitter-klar
-HOMEPAGE_URL := https://github.com/ProCode-Software/klar
+HOMEPAGE_URL := https://github.com/klarlanguage/tree-sitter-klar
 VERSION := 0.1.0
 DESCRIPTION := The progressive programming language
 

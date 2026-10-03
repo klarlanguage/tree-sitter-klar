@@ -7,10 +7,10 @@
             "title": "Klar",
             "scope": "source.klar",
             "file-types": ["klar"],
-            "injection-regex": "^klar$",
-            "class-name": "TreeSitterKlar",
             "highlights": "queries/highlights.scm",
-            "locals": "queries/locals.scm"
+            "locals": "queries/locals.scm",
+            "injection-regex": "^klar$",
+            "class-name": "TreeSitterKlar"
         }
     ],
     "metadata": {
@@ -18,7 +18,7 @@
         "license": "Apache-2.0",
         "description": "The progressive programming language",
         "authors": [{ "name": "ProCode Software" }],
-        "links": { "repository": "https://github.com/ProCode-Software/klar" }
+        "links": { "repository": "https://github.com/klarlanguage/tree-sitter-klar" }
     },
     "bindings": {
         "c": true,

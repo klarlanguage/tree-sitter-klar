@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.13)
 project(tree-sitter-klar
         VERSION "0.1.0"
         DESCRIPTION "The progressive programming language"
-        HOMEPAGE_URL "https://github.com/ProCode-Software/klar"
+        HOMEPAGE_URL "https://github.com/klarlanguage/tree-sitter-klar"
         LANGUAGES C)
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
