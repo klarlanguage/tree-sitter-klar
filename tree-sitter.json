@@ -21,12 +21,12 @@
         "links": { "repository": "https://github.com/ProCode-Software/klar" }
     },
     "bindings": {
-        "c": false,
+        "c": true,
         "go": false,
         "java": false,
         "node": true,
         "python": false,
-        "rust": false,
+        "rust": true,
         "swift": false,
         "zig": false
     }
