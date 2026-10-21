@@ -35,7 +35,8 @@
         "build": "tree-sitter build --wasm",
         "start": "tree-sitter playground",
         "test": "bun test bindings/node/*_test.js",
-        "format-queries": "ts_query_ls format ./queries"
+        "format-queries": "ts_query_ls format ./queries",
+        "install": "node-gyp-build"
     },
     "dependencies": {
         "node-addon-api": "^8.9.2",
