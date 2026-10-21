@@ -149,6 +149,14 @@ jobs:
           bun-version: latest
           registries: 'https://registry.npmjs.org'
 
+      # Just for trusted publishing
+      - name: Set up NodeJS
+        uses: actions/setup-node@v7
+        with:
+          package-manager-cache: false
+          node-version: latest
+          registry-url: 'https://registry.npmjs.org'
+
       - name: Download binaries
         uses: actions/download-artifact@v8
         with:
@@ -169,5 +177,3 @@ jobs:
         run: |
           bun pm pack
           npm publish tree-sitter-klar-*.tgz
-        env:
-          NODE_AUTH_TOKEN: ${{env.BUN_AUTH_TOKEN}}
