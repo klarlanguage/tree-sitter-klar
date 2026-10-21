@@ -51,7 +51,7 @@ jobs:
         with:
           ref: ${{github.head_ref}}
       - name: Set up NodeJS
-        uses: oven-sh/setup-bun@latest
+        uses: oven-sh/setup-bun@v2
       - name: Install parser dependencies
         run: |-
           npm i --legacy-peer-deps

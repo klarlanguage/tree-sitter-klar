@@ -10,11 +10,11 @@ permissions:
 
 jobs:
   github:
-    uses: tree-sitter/workflows/.github/workflows/release.yml@main
+    uses: ./.github/workflows/github-release.yml
     with:
       generate: true
   npm:
-    uses: tree-sitter/workflows/.github/workflows/package-npm.yml@main
+    uses: ./.github/workflows/package-npm.yml
     with:
       generate: true
   # crates:
