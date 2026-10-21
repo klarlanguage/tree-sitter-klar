@@ -34,7 +34,7 @@ jobs:
       - name: Install dependencies
         run: |-
           if jq -e "$JQ_SCRIPT" package.json >/dev/null; then
-            npm i --ignore-scripts --omit peer --omit optional
+            bun i --ignore-scripts --omit peer --omit optional
           fi
         env:
           JQ_SCRIPT: >-
