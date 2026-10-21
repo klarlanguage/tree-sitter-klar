@@ -95,7 +95,7 @@ export default grammar({
         [$.destructure, $.identifier_or_discard],
         [$.destructure, $.type_alias],
         [$.lambda_expression],
-        [$.attribute]
+        [$.attribute],
     ],
     rules: {
         source_file: $ =>
@@ -334,7 +334,11 @@ export default grammar({
                 '}'
             ),
         attribute: $ =>
-            seq('@', field('name', $.identifier), field('arguments', optional($.call_args))),
+            seq(
+                '@',
+                field('name', $.identifier),
+                field('arguments', optional($.call_args))
+            ),
 
         // Expressions
         // ===========

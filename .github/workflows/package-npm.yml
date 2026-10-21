@@ -1,0 +1,140 @@
+name: Publish package (npm)
+
+on:
+  workflow_call:
+    inputs:
+      package-name:
+        description: The name of the package
+        default: ${{github.event.repository.name}}
+        type: string
+      environment-name:
+        description: The name of the environment
+        default: npm
+        type: string
+      generate:
+        description: Generate the parser artifacts
+        default: false
+        type: boolean
+      abi-version:
+        description: The tree-sitter ABI version
+        default: 15
+        type: number
+
+permissions:
+  id-token: write # Required for OIDC
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build_wasm:
+    name: Build Wasm binaries
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Set up NodeJS
+        uses: actions/setup-node@v7
+        with:
+          cache: npm
+          node-version: latest
+      - name: Install dependencies
+        run: npm i --omit peer --omit optional
+      - name: Regenerate parser
+        if: ${{inputs.generate}}
+        run: |
+          while read -r grammar_dir; do
+            pushd "$grammar_dir"
+            npm x -- tree-sitter generate
+            popd > /dev/null
+          done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
+        env:
+          TREE_SITTER_ABI_VERSION: ${{inputs.abi-version}}
+      - name: Build Wasm binaries
+        run: |-
+          while read -r grammar_dir; do
+            npm x -- tree-sitter build --wasm "$grammar_dir"
+          done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
+      - name: Upload binaries
+        uses: actions/upload-artifact@v7
+        with:
+          path: '*.wasm'
+          name: prebuilds-wasm
+          retention-days: 2
+
+  build_node:
+    name: Build NodeJS binaries on ${{matrix.os}}
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os:
+          - windows-2022
+          - windows-11-arm
+          - ubuntu-24.04
+          - ubuntu-24.04-arm
+          - macos-15
+          - macos-15-intel
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Set up NodeJS
+        uses: actions/setup-node@v7
+        with:
+          node-version: latest
+      - name: Install dependencies
+        run: bun install --omit peer --omit optional
+      - name: Regenerate parser
+        if: ${{inputs.generate}}
+        shell: bash
+        run: |
+          while read -r grammar_dir; do
+            grammar_dir="${grammar_dir%$'\r'}"
+            pushd "$grammar_dir"
+            bun tree-sitter generate
+            popd > /dev/null
+          done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
+      - name: Build binary
+        run: bun prebuildify -t 20.19.5
+      - name: Upload binaries
+        uses: actions/upload-artifact@v7
+        with:
+          path: prebuilds/**
+          name: prebuilds-${{matrix.os}}
+          retention-days: 2
+
+  package:
+    name: Publish NodeJS package
+    needs: [build_wasm, build_node]
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{inputs.environment-name}}
+      url: https://www.npmjs.com/package/${{inputs.package-name}}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+          registries: 'https://registry.npmjs.org'
+
+      - name: Download binaries
+        uses: actions/download-artifact@v8
+        with:
+          path: prebuilds
+          pattern: prebuilds-*
+          merge-multiple: true
+
+      - name: Check binaries
+        run: tree prebuilds
+
+      - name: Move Wasm binaries to root
+        continue-on-error: true
+        run: mv -v prebuilds/*.wasm .
+
+      - name: Publish to npm
+        run: npm publish
