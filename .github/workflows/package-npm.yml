@@ -19,6 +19,7 @@ on:
         description: The tree-sitter ABI version
         default: 15
         type: number
+  workflow_dispatch:
 
 permissions:
   id-token: write # Required for OIDC
@@ -42,6 +43,7 @@ jobs:
         with:
           package-manager-cache: false
           node-version: latest
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
