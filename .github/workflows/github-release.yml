@@ -95,7 +95,7 @@ jobs:
             *.wasm
             ${{env.REPO_NAME}}.tar.gz
 
-      - name: Create GitHub release  
+      - name: Create GitHub release
         run: |-
           RELEASE_NOTE="> [!NOTE]
           > Download \`$REPO_NAME.tar.gz\` for the *complete* source code."

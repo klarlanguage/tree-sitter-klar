@@ -120,8 +120,8 @@ jobs:
 
       - name: Build binary
         run: |
-            bun add -g node-gyp
-            bun prebuildify -t 22.0.0
+          bun add -g node-gyp
+          bun prebuildify -t 22.0.0
 
       - name: Upload binaries
         uses: actions/upload-artifact@v7
@@ -162,4 +162,8 @@ jobs:
         run: mv -v prebuilds/*.wasm .
 
       - name: Publish to npm
-        run: bun publish
+        # Bun doesn't support trusted publishing yet
+        # See https://github.com/oven-sh/bun/issues/15601
+        run: |
+          bun pm pack
+          npm publish tree-sitter-klar-*.tgz
