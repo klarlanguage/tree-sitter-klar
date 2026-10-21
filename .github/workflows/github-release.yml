@@ -29,8 +29,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+
       - name: Set up tree-sitter CLI
         uses: tree-sitter/setup-action/cli@v2
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+          registries: 'https://registry.npmjs.org'
+
       - name: Install dependencies
         run: |-
           if jq -e "$JQ_SCRIPT" package.json >/dev/null; then
@@ -43,6 +51,7 @@ jobs:
             (.key | startswith("tree-sitter-"))
             and (.key != "tree-sitter-cli")
             )) | length > 0
+
       - name: Generate parser
         if: inputs.generate
         shell: bash
@@ -54,12 +63,14 @@ jobs:
           done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
         env:
           TREE_SITTER_ABI_VERSION: ${{inputs.abi-version}}
+
       - name: Build Wasm binaries
         shell: bash
         run: |-
           while read -r grammar_dir; do
             tree-sitter build --wasm "$grammar_dir"
           done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
+
       - name: Create source code tarball
         run: |
           git ls-files > "$RUNNER_TEMP/files"
@@ -76,12 +87,14 @@ jobs:
             then "src"
             else "\(.path)/src"
             end
+
       - name: Generate attestations
         uses: actions/attest-build-provenance@v4
         with:
           subject-path: |
             *.wasm
             ${{env.REPO_NAME}}.tar.gz
+
       - name: Create GitHub release
         run: |-
           RELEASE_NOTE="> [!NOTE]

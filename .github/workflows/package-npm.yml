@@ -36,13 +36,22 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+
       - name: Set up NodeJS
         uses: actions/setup-node@v7
         with:
           package-manager-cache: false
           node-version: latest
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+          registries: 'https://registry.npmjs.org'
+
       - name: Install dependencies
         run: bun i --omit peer --omit optional
+
       - name: Regenerate parser
         if: ${{inputs.generate}}
         run: |
@@ -53,11 +62,13 @@ jobs:
           done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
         env:
           TREE_SITTER_ABI_VERSION: ${{inputs.abi-version}}
+
       - name: Build Wasm binaries
         run: |-
           while read -r grammar_dir; do
             bun tree-sitter build --wasm "$grammar_dir"
           done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
+
       - name: Upload binaries
         uses: actions/upload-artifact@v7
         with:
@@ -80,13 +91,22 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+
       - name: Set up NodeJS
         uses: actions/setup-node@v7
         with:
           node-version: latest
           package-manager-cache: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+          registries: 'https://registry.npmjs.org'
+
       - name: Install dependencies
         run: bun install --omit peer --omit optional
+
       - name: Regenerate parser
         if: ${{inputs.generate}}
         shell: bash
@@ -97,8 +117,10 @@ jobs:
             bun tree-sitter generate
             popd > /dev/null
           done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
+
       - name: Build binary
         run: bun prebuildify -t 20.19.5
+
       - name: Upload binaries
         uses: actions/upload-artifact@v7
         with:
