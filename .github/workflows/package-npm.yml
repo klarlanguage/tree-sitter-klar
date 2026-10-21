@@ -169,3 +169,5 @@ jobs:
         run: |
           bun pm pack
           npm publish tree-sitter-klar-*.tgz
+        env:
+          NODE_AUTH_TOKEN: ${{env.BUN_AUTH_TOKEN}}
