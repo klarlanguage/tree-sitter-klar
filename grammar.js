@@ -64,6 +64,7 @@ export default grammar({
             'none',
             'or',
             'public',
+            // TODO: Uncomment once used in the grammar
             // 'readonly',
             'return',
             'stop',
@@ -85,11 +86,21 @@ export default grammar({
         [$.union_type],
         [$.range_expression],
         [$.type_alias, $.identifier_or_discard],
+        [$.expression, $.destructure, $.type_alias],
+        [$.expression, $.type_alias],
+        // Lambda expressions create a whole lot of conflicts
+        [$.method_self_declaration, $.destructure],
+        [$.lambda_expression, $.tuple_destructure],
+        [$.destructure, $.type_alias, $.identifier_or_discard],
+        [$.destructure, $.identifier_or_discard],
+        [$.destructure, $.type_alias],
+        [$.lambda_expression],
+        [$.attribute]
     ],
     rules: {
         source_file: $ =>
             repeat(seq(sep($.attribute, '\n'), $.top_level_statement, '\n')),
-        block: $ => seq('{', sep($.statement, '\n'), '}'),
+        block: $ => seq('{', sep($.statement, '\n', true), '}'),
 
         // Statements
         // ===========
@@ -131,15 +142,18 @@ export default grammar({
                 $.struct_declaration,
                 $.enum_declaration,
                 $.interface_declaration,
-                $.tag_declaration
+                $.tag_declaration,
+                $.type_alias_declaration
             ),
+        type_alias_declaration: $ =>
+            seq('type', field('name', $.identifier_or_discard), '=', $.type),
         struct_declaration: $ =>
             seq(
                 'type',
                 field('name', $.identifier_or_discard),
                 optional($.inherited_types),
                 '{',
-                sep($.struct_field, '\n'),
+                sep($.struct_field, '\n', true),
                 '}'
             ),
         enum_declaration: $ =>
@@ -148,7 +162,7 @@ export default grammar({
                 field('name', $.identifier_or_discard),
                 optional($.inherited_types),
                 '{',
-                sep1($.enum_item, choice('\n', ',')),
+                sep1($.enum_item, choice('\n', ','), true),
                 '}'
             ),
         interface_declaration: $ =>
@@ -158,7 +172,7 @@ export default grammar({
                 field('name', $.identifier_or_discard),
                 optional($.inherited_types),
                 '{',
-                sep($.interface_entry, '\n'),
+                sep($.interface_entry, '\n', true),
                 '}'
             ),
         tag_declaration: $ =>
@@ -187,7 +201,26 @@ export default grammar({
             ),
         struct_field: $ => seq(optional('readonly'), $.field, optional($.default_value)),
         enum_item: $ =>
-            seq('.', reserved('fields', $.identifier), optional($.default_value)),
+            seq(
+                '.',
+                reserved('fields', field('name', $.identifier)),
+                optional(field('params', $.enum_params_declaration)),
+                optional($.default_value)
+            ),
+        enum_params_declaration: $ =>
+            seq(
+                '(',
+                commaSep1(
+                    seq(
+                        optional(
+                            seq(commaSep1(field('name', $.identifier_or_discard)), ':')
+                        ),
+                        $.type
+                    ),
+                    true
+                ),
+                ')'
+            ),
 
         function_declaration: $ =>
             seq(
@@ -289,7 +322,8 @@ export default grammar({
             ),
         unqualified_imports: $ =>
             seq(
-                '.{',
+                '.',
+                '{',
                 sep1(
                     seq(
                         field('name', $.identifier),
@@ -300,7 +334,7 @@ export default grammar({
                 '}'
             ),
         attribute: $ =>
-            seq('@', field('name', $.identifier), field('arguments', $.call_args)),
+            seq('@', field('name', $.identifier), field('arguments', optional($.call_args))),
 
         // Expressions
         // ===========
@@ -332,23 +366,24 @@ export default grammar({
                 $.range_expression,
                 $.parenthesized_expression,
                 $.for_expression,
-                $.assertion_expression
+                $.assertion_expression,
+                $.dot_init_expression,
+                $.list_cast_expression,
+                $.map_cast_expression,
+                $.lambda_expression
             ),
         expression_or_rest: $ => choice($.expression, $.rest),
         rest: $ => prec(Precedence.Range, seq($.expression, '...')),
         int_literal: $ => choice($.hex_literal, $.decimal_literal, $.binary_literal),
         hex_literal: () => /0x[A-Fa-f0-9_]+/,
         binary_literal: () => /0b[0-1_]+/,
-        decimal_literal: () => /[0-9_]+/,
+        decimal_literal: () => /[0-9](?:[0-9_]*[0-9])?/,
         regex_literal: () =>
             token(
                 seq('#/', field('content', 'x'), '/', optional(field('flags', /[a-z]+/)))
             ), // TODO
         float_literal: () =>
-            choice(
-                /-?[0-9_]+\.[0-9_]+([eE][+-]?[0-9_]+)?/,
-                /-?[0-9_]+([eE][+-]?[0-9_]+)?/
-            ),
+            choice(/[0-9_]+\.[0-9_]+([eE][+-]?[0-9_]+)?/, /[0-9_]+[eE][+-]?[0-9_]+/),
         bool_literal: () => choice('true', 'false'),
         // See https://github.com/ProCode-Software/klar/discussions/7
         none_literal: () => choice('none', 'nil'),
@@ -359,16 +394,14 @@ export default grammar({
 
         ...((stringEscape =
             // See https://github.com/ProCode-Software/klar/tree/main/internal/lexer/string.go
-            /** @param {any} $ @param {string} quoteStyle */
-            ($, quoteStyle) =>
+            /** @param {any} $ @param {string[]} extraChars */
+            ($, ...extraChars) =>
                 token.immediate(
                     seq(
                         '\\',
                         choice(
                             alias(
-                                new RegExp(
-                                    `[^\\\\befnrt${quoteStyle == '"' ? quoteStyle + '{' : quoteStyle}]`
-                                ),
+                                new RegExp(`[\\\\befnrt${extraChars.join('')}]`),
                                 $.character_escape
                             ),
                             alias(/x[0-9A-Fa-f]/, $.hex_escape),
@@ -395,7 +428,7 @@ export default grammar({
             choice(
                 alias(stringTextFragment('{"\\\\'), $.string_text_fragment),
                 $.string_interpolation,
-                alias(stringEscape($, '"'), $.string_escape)
+                alias(stringEscape($, '"', '{'), $.string_escape)
             ),
         string_interpolation: $ => seq('{', $.expression, '}'),
 
@@ -407,18 +440,24 @@ export default grammar({
                 'when',
                 commaSep($.expression),
                 '{',
-                sep($.when_case, choice('\n', ',')),
+                sep($.when_case, choice('\n', ','), true),
                 '}'
             ),
         when_case: $ =>
             // TODO: Other statements are allowed outside a block
             seq(
-                commaSep1($.when_pattern),
+                commaSep1($._when_pattern),
                 optional(seq('if', $.expression)),
                 '->',
                 choice($.block, $.expression)
             ),
+        _when_pattern: $ => choice($.when_pattern, $.when_pattern_options),
         when_pattern: $ => choice($.expression),
+        when_pattern_options: $ =>
+            prec.left(
+                0,
+                seq(optional('|'), $.when_pattern, repeat1(seq('|', $.when_pattern)))
+            ),
         binary_expression: $ =>
             choice(
                 ...[
@@ -580,12 +619,38 @@ export default grammar({
                 alias('_', $.discard),
                 $.tuple_destructure,
                 $.list_destructure
-            ),
+            ), // TODO: Map/object destructure once decided in Klar
         list_destructure: $ =>
             seq('[', commaSep1(choice($.destructure, $.destructure_rest), true), ']'),
         tuple_destructure: $ =>
             seq('(', commaSep1(choice($.destructure, $.destructure_rest), true), ')'),
         destructure_rest: $ => seq($.identifier, '...'),
+        // TODO: If the Klar lexer makes '.(' a single token, update this
+        dot_init_expression: $ => seq('.', $.call_args),
+        list_cast_expression: $ => seq($.list_type, $.call_args),
+        map_cast_expression: $ => seq($.map_type, $.call_args),
+        lambda_expression: $ =>
+            seq(
+                'func',
+                optional(
+                    choice(
+                        commaSep1(field('name', $.destructure)),
+                        seq(
+                            '(',
+                            commaSep(
+                                seq(
+                                    commaSep1(field('name', $.destructure)),
+                                    optional(seq(':', $.type)),
+                                    optional($.default_value)
+                                ),
+                                true
+                            ),
+                            ')'
+                        )
+                    )
+                ),
+                choice($.block, seq('->', $.expression))
+            ),
 
         // Types
         // ===========
@@ -612,7 +677,12 @@ export default grammar({
                     'params',
                     commaSep(
                         seq(
-                            optional(seq(commaSep1($.identifier_or_discard), ':')),
+                            optional(
+                                seq(
+                                    commaSep1(field('label', $.identifier_or_discard)),
+                                    ':'
+                                )
+                            ),
                             field('type', $.type_or_rest)
                         ),
                         true
@@ -622,15 +692,26 @@ export default grammar({
                 optional(seq('->', field('return_type', $.type)))
             ),
         union_type: $ =>
-            prec.left(Precedence.UnionType, seq(optional('|'), sep1($.type, '|'))),
+            prec.left(
+                Precedence.UnionType,
+                seq(optional('|'), $.type, repeat1(seq('|', $.type)))
+            ),
         generic_type: $ =>
             prec(Precedence.GenericType, seq($.type, '<', commaSep1($.type, true), '>')),
         optional_type: $ => prec(Precedence.OptionalType, seq($.type, '?')),
         type_alias: $ => alias($.identifier, $.type_alias),
 
         identifier: () => /[\p{L}_][\p{L}\p{N}_]*/u,
-        identifier_or_discard: $ => choice($.identifier, alias('_', $.identifier)),
+        identifier_or_discard: $ => alias(choice($.identifier, '_'), $.identifier),
         default_value: $ => seq('=', $.expression),
+        // TODO: Nested block comments. I can't recursively use a $.block_comment rule
+        // as it makes $.comment a nonterminal rule. We may have to use an external
+        // scanner.
+        //
+        // See:
+        // - https://github.com/tlaplus-community/tree-sitter-tlaplus/pull/16
+        // - https://github.com/tree-sitter/tree-sitter-rust/blob/master/src/scanner.c#L335
+        //
         comment: () =>
             token(choice(seq('//', /.*/), seq('/*', /[^*]*\*+([^/*][^*]*\*+)*/, '/'))),
     },

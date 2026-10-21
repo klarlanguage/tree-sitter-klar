@@ -42,7 +42,7 @@
 
     "mkdirp-classic": ["mkdirp-classic@0.5.3", "", {}, "sha512-gKLcREMhtuZRwRAfqP3RFW+TK4JqApVBtOIftVgjuABpAtpxhPGaDcfvbhNvD0B8iD1oUr/txX35NjcaY6Ns/A=="],
 
-    "node-abi": ["node-abi@3.96.0", "", { "dependencies": { "semver": "^7.3.5" } }, "sha512-rebQ/lz7i0EkoLzUVSrKRzA69zMkwLp95kKMWoMDkkM00Suxz0D7zEQPwRml5fQum24mj7bPvmlgLAmu2JCiYg=="],
+    "node-abi": ["node-abi@3.99.0", "", { "dependencies": { "semver": "^7.3.5" } }, "sha512-lLdwkeg2XUVPTHqWjPltTxH81zbQNbUWC+AEb9ni50KjxkUzAAx1HGtMT21sbntzfUGfIphhcklvs3imJeqDXw=="],
 
     "node-addon-api": ["node-addon-api@8.9.2", "", {}, "sha512-VijLXbi3UACN69I0JVXJsX4tjACjNoQDgv2gTF6sx2wWEi8tkSg2eX8p5gSIFi8z2+DL3oHmY6OyKce38SDolg=="],
 
@@ -72,7 +72,7 @@
 
     "tree-sitter": ["tree-sitter@0.25.1", "", { "dependencies": { "node-addon-api": "^8.5.0", "node-gyp-build": "^4.8.4" } }, "sha512-mrcEdkYtHfrK1A6fs3O6FxkBo0Qig5XUXqHhxUOQu0bmPo00QF4XaSx4edpazdHwxnSCjlGKGgIqWdaN4dvTLA=="],
 
-    "tree-sitter-cli": ["tree-sitter-cli@0.27.0", "", { "bin": { "tree-sitter": "cli.js" } }, "sha512-E42kR0og1mFlZBxPj7K4fBXCTjxPTGe19U9RXGWNq0FQKzXOxIp8bhCYFMKhddiVZUsJwW35MYGU9Q1oVYtpbA=="],
+    "tree-sitter-cli": ["tree-sitter-cli@0.27.1", "", { "bin": { "tree-sitter": "cli.js" } }, "sha512-WFPEjxwscCjZP9uYj0rxT2TyGBkDcXUkGTthrMpxZFGvzXEYsbC3J0633Ps8dd2mMsdsbU8oVwmQ148lLHI7Xw=="],
 
     "util-deprecate": ["util-deprecate@1.0.2", "", {}, "sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw=="],
 

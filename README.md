@@ -4,17 +4,19 @@ A [Tree-sitter](https://github.com/tree-sitter/tree-sitter) grammar for Klar fil
 
 The [`grammar.js`](./grammar.js) file is designed to be a syntax reference for Klar implementations. Any discrepancy will be documented in the file.
 
+**Status: Prototype** - Currently, we're just getting all of the syntax covered. Tests and optimizations will be done later.
+
 ## Development
 
-[Bun](https://bun.com) and [tree-sitter-cli](https://tree-sitter.github.io/tree-sitter/creating-parsers/1-getting-started.html#installation) are required. You can install tree-sitter-cli as a Rust crate, or as an NPM dependency (use `bun tree-sitter-cli` or `bunx tree-sitter-cli` to run).
+[Bun](https://bun.com) is required
 
 ```sh
 bun install # Install dependencies
-tree-sitter playground # Test parser and queries in browser
-tree-sitter parse # Test parser in the terminal
-tree-sitter generate # Regenerate C parser
-tree-sitter init # Regenerate bindings and miscellaneous files
-tree-sitter build # Compile parser to object file (use --wasm for a .wasm file)
+bun tree-sitter playground # Test parser and queries in browser
+bun tree-sitter parse # Test parser in the terminal
+bun tree-sitter generate # Regenerate C parser
+bun tree-sitter init # Regenerate bindings and miscellaneous files
+bun tree-sitter build # Compile parser to object file (use --wasm for a .wasm file)
 ```
 
 ## Contributing
@@ -30,7 +32,7 @@ Contributions should follow our [style guide](https://github.com/ProCode-Softwar
 
 ### Formatting
 
-All source files (excluding generated files) in your PRs should be properly formatted. Run [`oxfmt`](https://oxc.rs/docs/guide/usage/formatter.html) to format. Queries can be formatted using [`ts-query-ls format ./queries`](https://github.com/ribru17/ts_query_ls#formatter).
+All source files (excluding generated files) in your PRs should be properly formatted. Run [`oxfmt`](https://oxc.rs/docs/guide/usage/formatter.html) to format. Queries can be formatted by running [`ts-query-ls format ./queries`](https://github.com/ribru17/ts_query_ls#formatter).
 
 ### Resources
 
@@ -47,6 +49,7 @@ See https://tree-sitter.github.io/tree-sitter/using-parsers/queries/index.html a
 - [ ] Set up CI for automatically generating the parser on commit
 - [ ] Write tests
 - [ ] Publish to NPM and crates.io
+- [ ] Doc comments with Markdown injections
 
 ## License
 

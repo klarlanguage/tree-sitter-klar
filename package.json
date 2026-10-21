@@ -30,11 +30,12 @@
     "main": "bindings/node",
     "types": "bindings/node",
     "scripts": {
-        "generate": "tree-sitter generate && rm ./.editorconfig",
+        "generate": "tree-sitter generate",
         "prestart": "tree-sitter build --wasm",
         "build": "tree-sitter build --wasm",
         "start": "tree-sitter playground",
-        "test": "bun test bindings/node/*_test.js"
+        "test": "bun test bindings/node/*_test.js",
+        "format-queries": "ts_query_ls format ./queries"
     },
     "dependencies": {
         "node-addon-api": "^8.9.2",
