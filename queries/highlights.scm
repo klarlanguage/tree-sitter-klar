@@ -1,5 +1,6 @@
 ; Generic nodes
 ; They are listed first so they don't override anything
+; ========
 (identifier) @variable
 
 (discard) @variable
@@ -7,9 +8,11 @@
 (type_alias) @type
 
 ; Punctuation
+; ========
 [
   ":"
   ","
+  "."
 ] @punctuation.delimiter
 
 [
@@ -22,9 +25,8 @@
   "#{"
 ] @punctuation.bracket
 
-"." @punctuation.delimiter
-
 ; Keywords
+; ========
 [
   "and"
   "as"
@@ -52,6 +54,7 @@
   (#eq? @variable.builtin "self"))
 
 ; Operators
+; ========
 [
   "..."
   "..<"
@@ -86,6 +89,7 @@
   "|."
 ] @operator
 
+; Highlight colons as operators when used in type contexts
 (variable_declaration
   ":" @operator)
 
@@ -102,6 +106,7 @@
 (comment) @comment
 
 ; Literals
+; ========
 (discard) @keyword ; TODO: Don't know what this should be (keyword or variable?)
 
 [
@@ -123,9 +128,18 @@
 (enum_literal
   (identifier) @enum)
 
-; (regex_literal (["#/", "/"]) @punctuation.bracket)
-; (regex_literal content: (_) @string.regex)
+(regex_literal
+  [
+    "#/"
+    "/"
+  ] @punctuation.bracket)
+
+(regex_literal
+  content: _ @string.regex)
+
 ; Types
+; ========
+; Angle brackets are punctuation when being used in generics
 (generic_type
   [
     "<"
@@ -139,6 +153,7 @@
 (#is-not? local)
 
 ; Declarations
+; ========
 (struct_declaration
   name: (_) @type)
 

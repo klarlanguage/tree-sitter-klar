@@ -40,7 +40,7 @@ For new contributors, see [Tree-sitter's documentation](https://tree-sitter.gith
 
 #### Writing Queries
 
-See https://tree-sitter.github.io/tree-sitter/using-parsers/queries/index.html and https://tree-sitter.github.io/tree-sitter/3-syntax-highlighting.html on how to write queries and syntax highlighting. As a tip, when writing queries, we recommend using the `tree-sitter playground` command and [ts-query-ls](https://github.com/ribru17/ts_query_ls) in your editor.
+See https://tree-sitter.github.io/tree-sitter/using-parsers/queries/index.html and https://tree-sitter.github.io/tree-sitter/3-syntax-highlighting.html on how to write queries and syntax highlighting. As a tip, when writing queries, we recommend using the `tree-sitter playground` command and the [ts-query-ls](https://github.com/ribru17/ts_query_ls) language server in your editor.
 
 ## Roadmap
 
@@ -48,8 +48,12 @@ See https://tree-sitter.github.io/tree-sitter/using-parsers/queries/index.html a
 - [ ] Share string/numeric literal formats with [Klon](https://github.com/klarlanguage/tree-sitter-klon)
 - [ ] Set up CI for automatically generating the parser on commit
 - [ ] Write tests
-- [ ] Publish to NPM and crates.io
+- [x] Publish to NPM
+- [ ] Publish to crates.io
 - [ ] Doc comments with Markdown injections
+- [ ] Fix statement termination (newlines)
+- [ ] Inject [tree-sitter-regex](https://github.com/tree-sitter/tree-sitter-regex) in regular expressions
+- [ ] Handle interpolation rules (no number or comma immediately following `{`) in regular expressions
 
 ## License
 

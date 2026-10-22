@@ -379,15 +379,29 @@ export default grammar({
         expression_or_rest: $ => choice($.expression, $.rest),
         rest: $ => prec(Precedence.Range, seq($.expression, '...')),
         int_literal: $ => choice($.hex_literal, $.decimal_literal, $.binary_literal),
+        // In Klar, '_' can only be used between 2 digits ('2_', '_2', and '2__4' aren't allowed)
         hex_literal: () => /0x[A-Fa-f0-9_]+/,
         binary_literal: () => /0b[0-1_]+/,
         decimal_literal: () => /[0-9](?:[0-9_]*[0-9])?/,
-        regex_literal: () =>
-            token(
-                seq('#/', field('content', 'x'), '/', optional(field('flags', /[a-z]+/)))
-            ), // TODO
         float_literal: () =>
             choice(/[0-9_]+\.[0-9_]+([eE][+-]?[0-9_]+)?/, /[0-9_]+[eE][+-]?[0-9_]+/),
+        regex_literal: $ =>
+            seq(
+                '#/',
+                field('content', repeat($._regex_fragment)),
+                token.immediate('/'),
+                token.immediate(optional(field('flags', /[a-z]+/)))
+            ),
+        // Braces are used for regex interpolations, similar to strings, with the
+        // added rule that '{' may not be immediately followed by a number or comma.
+        // Those are parsed as regex quantifiers.
+        _regex_fragment: $ =>
+            choice(
+                $.regex_text_fragment,
+                alias($.string_interpolation, $.regex_interpolation)
+            ),
+        regex_text_fragment: () =>
+            token.immediate(prec(1, choice('\\{', '\\/', /\{[\d,]/, /[^/{]+/))),
         bool_literal: () => choice('true', 'false'),
         // See https://github.com/ProCode-Software/klar/discussions/7
         none_literal: () => choice('none', 'nil'),
@@ -419,16 +433,18 @@ export default grammar({
         // See https://github.com/ProCode-Software/klar/discussions/1
         string_literal: $ =>
             choice($.single_quoted_string, $.double_quoted_string, $.backquoted_string),
-        single_quoted_string: $ => seq("'", repeat($.single_quoted_string_fragment), "'"),
-        double_quoted_string: $ => seq('"', repeat($.double_quoted_string_fragment), '"'),
+        single_quoted_string: $ =>
+            seq("'", repeat($._single_quoted_string_fragment), "'"),
+        double_quoted_string: $ =>
+            seq('"', repeat($._double_quoted_string_fragment), '"'),
         backquoted_string: $ =>
             seq('`', alias(stringTextFragment('`'), $.string_text_fragment), '`'),
-        single_quoted_string_fragment: $ =>
+        _single_quoted_string_fragment: $ =>
             choice(
                 alias(stringTextFragment("\n'\\\\"), $.string_text_fragment),
                 alias(stringEscape($, "'"), $.string_escape)
             ),
-        double_quoted_string_fragment: $ =>
+        _double_quoted_string_fragment: $ =>
             choice(
                 alias(stringTextFragment('{"\\\\'), $.string_text_fragment),
                 $.string_interpolation,
