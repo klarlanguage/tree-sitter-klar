@@ -3,6 +3,9 @@
 ; ========
 (identifier) @variable
 
+((identifier) @constant
+  (#match? @constant "^\\p{Lu}[\\p{Lu}\\p{N}_]*$"))
+
 (discard) @variable
 
 (type_alias) @type
@@ -51,7 +54,8 @@
 
 ; 'self'
 ((identifier) @variable.builtin
-  (#eq? @variable.builtin "self"))
+  (#eq? @variable.builtin "self")
+  (#is-not? local))
 
 ; Operators
 ; ========
@@ -96,10 +100,13 @@
 (function_param_declaration
   ":" @operator)
 
-(field
+(field_declaration
   ":" @operator)
 
-(enum_params_declaration
+(type_pair_list
+  ":" @operator)
+
+(named_self
   ":" @operator)
 
 ; TODO: Also apply to other colons that are followed by types
@@ -146,11 +153,21 @@
     ">"
   ] @punctuation.bracket)
 
+(generic_types_declaration
+  [
+    "<"
+    ">"
+  ] @punctuation.bracket)
+
+(lambda_type
+  params: (_
+    label: _ @variable.parameter))
+
 ; Builtin types
 ; https://github.com/ProCode-Software/klar/tree/main/internal/ast/ast.go
 ((type_alias) @type.builtin
-  (#any-of? @type.builtin "Any" "String" "Int" "Float" "Bool" "Nothing" "Result" "Error"))
-(#is-not? local)
+  (#any-of? @type.builtin "Any" "String" "Int" "Float" "Bool" "Nothing" "Result" "Error")
+  (#is-not? local))
 
 ; Declarations
 ; ========
@@ -172,11 +189,12 @@
 (function_param_declaration
   name: (_) @variable.parameter)
 
-(enum_item
+(enum_item_declaration
   name: (_) @enum)
 
-(enum_params_declaration
-  name: (_) @variable.parameter)
+(enum_item_declaration
+  params: (_
+    label: (_) @variable.parameter))
 
 (attribute
   name: (_) @attribute)
@@ -185,6 +203,7 @@
   "@" @punctuation.delimiter)
 
 ; Expressions
+; ========
 (call_expression
   callee: [
     (identifier) @function
@@ -192,13 +211,27 @@
       right: (identifier) @function)
   ])
 
-(lambda_expression
-  name: (_) @variable.parameter)
+; Initializer
+(call_expression
+  callee: [
+    ((identifier) @type
+      (#match? @type "^\\p{L}"))
+    (index_expression
+      left: (identifier) @namespace
+      right: ((identifier) @type
+        (#match? @type "^\\p{L}")))
+  ])
 
 ; Builtin functions
 ; https://github.com/ProCode-Software/klar/tree/main/internal/analysis/builtin.go
 ((identifier) @function.builtin
   (#any-of? @function.builtin "print" "crashout" "clone" "zip" "TODO")
   (#is-not? local))
+
+(lambda_expression
+  name: (_) @variable.parameter)
+
+(call_param
+  label: (identifier) @property)
 
 ; TODO: 'value' in a pipeline
