@@ -144,6 +144,9 @@
 (regex_literal
   content: _ @string.regex)
 
+(regex_literal
+  flags: _ @keyword)
+
 ; Types
 ; ========
 ; Angle brackets are punctuation when being used in generics
@@ -183,18 +186,24 @@
 (interface_declaration
   name: (_) @type)
 
+(interface_method_declaration
+  param_label: (_) @property)
+
 (function_declaration
   name: (_) @function)
 
 (function_param_declaration
   name: (_) @variable.parameter)
 
+(function_param_declaration
+  label: (_) @property)
+
 (enum_item_declaration
   name: (_) @enum)
 
 (enum_item_declaration
   params: (_
-    label: (_) @variable.parameter))
+    label: (_) @property))
 
 (attribute
   name: (_) @attribute)

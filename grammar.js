@@ -408,7 +408,7 @@ export default grammar({
                 '#/',
                 field('content', repeat($._regex_fragment)),
                 token.immediate('/'),
-                token.immediate(optional(field('flags', /[a-z]+/)))
+                optional(field('flags', token.immediate(/[a-z]+/)))
             ),
         _regex_fragment: $ =>
             choice(
