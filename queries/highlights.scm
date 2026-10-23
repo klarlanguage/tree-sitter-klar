@@ -215,11 +215,11 @@
 (call_expression
   callee: [
     ((identifier) @type
-      (#match? @type "^\\p{L}"))
+      (#match? @type "^_?\\p{Lu}"))
     (index_expression
       left: (identifier) @namespace
       right: ((identifier) @type
-        (#match? @type "^\\p{L}")))
+        (#match? @type "^_?\\p{Lu}")))
   ])
 
 ; Builtin functions
