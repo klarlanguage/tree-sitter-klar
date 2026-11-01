@@ -167,7 +167,7 @@
     label: _ @variable.parameter))
 
 ; Builtin types
-; https://github.com/ProCode-Software/klar/tree/main/internal/ast/ast.go
+; https://github.com/klarlanguage/klar/tree/main/internal/ast/ast.go
 ((type_alias) @type.builtin
   (#any-of? @type.builtin "Any" "String" "Int" "Float" "Bool" "Nothing" "Result" "Error")
   (#is-not? local))
@@ -232,7 +232,7 @@
   ])
 
 ; Builtin functions
-; https://github.com/ProCode-Software/klar/tree/main/internal/analysis/builtin.go
+; https://github.com/klarlanguage/klar/tree/main/internal/analysis/builtin.go
 ((identifier) @function.builtin
   (#any-of? @function.builtin "print" "crashout" "clone" "zip" "TODO")
   (#is-not? local))

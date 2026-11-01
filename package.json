@@ -14,7 +14,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+github.com/ProCode-Software/klar.git"
+        "url": "git+github.com/klarlanguage/klar.git"
     },
     "files": [
         "grammar.js",

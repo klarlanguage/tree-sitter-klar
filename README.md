@@ -21,14 +21,14 @@ bun tree-sitter build # Compile parser to object file (use --wasm for a .wasm fi
 
 ## Contributing
 
-Issues, bug reports, and discussions should be created in the [main Klar repo](https://github.com/ProCode-Software/klar).
+Issues, bug reports, and discussions should be created in the [main Klar repo](https://github.com/klarlanguage/klar).
 
-Contributions should follow our [style guide](https://github.com/ProCode-Software/klar/blob/main/CONTRIBUTING.md#code-style) and [AI policy](https://github.com/ProCode-Software/klar/blob/main/CONTRIBUTING.md#using-ai) in the main Klar repo.
+Contributions should follow our [style guide](https://github.com/klarlanguage/klar/blob/main/CONTRIBUTING.md#code-style) and [AI policy](https://github.com/klarlanguage/klar/blob/main/CONTRIBUTING.md#using-ai) in the main Klar repo.
 
 ### References
 
-- [Klar Parser](https://github.com/ProCode-Software/klar/tree/main/internal/parser)
-- [Klar Lexer](https://github.com/ProCode-Software/klar/tree/main/internal/lexer)
+- [Klar Parser](https://github.com/klarlanguage/klar/tree/main/internal/parser)
+- [Klar Lexer](https://github.com/klarlanguage/klar/tree/main/internal/lexer)
 
 ### Formatting
 

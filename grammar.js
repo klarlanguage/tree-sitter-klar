@@ -7,7 +7,7 @@
 /// <reference types="tree-sitter-cli/dsl" />
 // @ts-check
 
-/** @see https://github.com/ProCode-Software/klar/blob/main/internal/parser/binding_power.go */
+/** @see https://github.com/klarlanguage/klar/blob/main/internal/parser/binding_power.go */
 const Precedence = {
     Default: 0, // Zero
     Expression: 1, // Minimum
@@ -45,7 +45,7 @@ export default grammar({
     extras: $ => [/\s/, $.comment],
     reserved: {
         // See
-        // https://github.com/ProCode-Software/klar/blob/main/internal/lexer/token_types.go
+        // https://github.com/klarlanguage/klar/blob/main/internal/lexer/token_types.go
         // (ReservedIdent)
         _: () => [
             'and',
@@ -347,7 +347,8 @@ export default grammar({
                         field('name', $.identifier),
                         optional(seq('as', field('alias', $.identifier)))
                     ),
-                    choice(',', '\n')
+                    choice(',', '\n'),
+                    true
                 ),
                 '}'
             ),
@@ -421,7 +422,7 @@ export default grammar({
         regex_text_fragment: () =>
             token.immediate(prec(1, choice('\\{', '\\/', /\{[\d,]/, /[^/{]+/))),
         bool_literal: () => choice('true', 'false'),
-        // See https://github.com/ProCode-Software/klar/discussions/7
+        // See https://github.com/klarlanguage/klar/discussions/7
         none_literal: () => choice('none', 'nil'),
         list_literal: $ => seq('[', commaSep($.expression, true), ']'),
         tuple_literal: $ => seq('(', commaSep1($.expression, true), ')'),
@@ -430,7 +431,7 @@ export default grammar({
 
         // I just want to keep this definition close to where it's used
         ...((stringEscape =
-            // See https://github.com/ProCode-Software/klar/tree/main/internal/lexer/string.go
+            // See https://github.com/klarlanguage/klar/tree/main/internal/lexer/string.go
             /** @param {any} $ @param {string[]} extraChars */
             ($, ...extraChars) =>
                 token.immediate(
@@ -447,7 +448,7 @@ export default grammar({
                     )
                 )),
         {}),
-        // See https://github.com/ProCode-Software/klar/discussions/1
+        // See https://github.com/klarlanguage/klar/discussions/1
         string_literal: $ =>
             choice($.single_quoted_string, $.double_quoted_string, $.backquoted_string),
         single_quoted_string: $ =>
@@ -494,7 +495,7 @@ export default grammar({
                     $.block,
                     $.expression,
                     // Some statements don't have to be in braces. See parseWhenCase() in
-                    // https://github.com/ProCode-Software/klar/tree/main/internal/parser/when.go
+                    // https://github.com/klarlanguage/klar/tree/main/internal/parser/when.go
                     $.assignment_statement,
                     $.return_statement,
                     $.next_statement,
