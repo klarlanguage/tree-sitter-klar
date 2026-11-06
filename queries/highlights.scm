@@ -274,3 +274,6 @@
 (unqualified_imports
   alias: ((_) @type
     (#match? @type "^_?\\p{Lu}")))
+
+(import_statement
+  path: (identifier) @namespace)
