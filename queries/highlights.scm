@@ -222,14 +222,8 @@
 
 ; Initializer
 (call_expression
-  callee: [
-    ((identifier) @type
-      (#match? @type "^_?\\p{Lu}"))
-    (index_expression
-      left: (identifier) @namespace
-      right: ((identifier) @type
-        (#match? @type "^_?\\p{Lu}")))
-  ])
+  callee: ((identifier) @type
+    (#match? @type "^_?\\p{Lu}")))
 
 ; Builtin functions
 ; https://github.com/klarlanguage/klar/tree/main/internal/analysis/builtin.go
@@ -244,6 +238,29 @@
   label: (identifier) @property)
 
 ; TODO: 'value' in a pipeline
-
 (loop_label
-    label_name: (_) @label)
+  label_name: (_) @label)
+
+; Qualified type (`namespace.Type`)
+(index_expression
+  left: (identifier) @namespace
+  right: ((identifier) @type
+    (#match? @type "^_?\\p{Lu}")))
+
+; Enum reference (`Enum.item`)
+; TODO: Apply this to namespaced enums (`namespace.Enum.item`)
+(index_expression
+  left: ((identifier) @type
+    (#match? @type "^_?\\p{Lu}"))
+  right: ((identifier) @enum
+    (#match? @enum "^_?\\p{Ll}")))
+
+; Statements
+; ===========
+(unqualified_imports
+  name: ((_) @type
+    (#match? @type "^_?\\p{Lu}")))
+
+(unqualified_imports
+  alias: ((_) @type
+    (#match? @type "^_?\\p{Lu}")))
