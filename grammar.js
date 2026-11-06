@@ -284,7 +284,13 @@ export default grammar({
                 field('target', choice($.identifier, $.index_expression, $.enum_literal))
             ),
         for_statement: $ =>
-            seq('for', $._for_variables_declaration, optional($.loop_label), $.block),
+            seq(
+                'for',
+                $._for_variables_declaration,
+                optional($.loop_label),
+                $.block,
+                optional(seq('or', $.block))
+            ),
         _for_variables_declaration: $ =>
             seq(
                 optional(
@@ -308,7 +314,8 @@ export default grammar({
                 'while',
                 field('condition', $.expression),
                 optional($.loop_label),
-                $.block
+                $.block,
+                optional(seq('or', $.block))
             ),
         return_statement: $ => seq('return', optional($.expression)),
         stop_statement: $ => seq('stop', optional($.loop_label)),
@@ -325,7 +332,8 @@ export default grammar({
                             $.index_expression,
                             $.computed_index_expression,
                             $.slice_expression
-                        )
+                        ),
+                        true
                     )
                 ),
                 field('operator', choice('=', '+=', '-=', '*=', '/=', '%=', '^=')),

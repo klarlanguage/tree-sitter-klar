@@ -234,7 +234,7 @@
 ; Builtin functions
 ; https://github.com/klarlanguage/klar/tree/main/internal/analysis/builtin.go
 ((identifier) @function.builtin
-  (#any-of? @function.builtin "print" "crashout" "clone" "zip" "TODO")
+  (#any-of? @function.builtin "print" "crashout" "clone" "zip" "TODO" "impossible")
   (#is-not? local))
 
 (lambda_expression
@@ -244,3 +244,6 @@
   label: (identifier) @property)
 
 ; TODO: 'value' in a pipeline
+
+(loop_label
+    label_name: (_) @label)
