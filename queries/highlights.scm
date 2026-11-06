@@ -225,6 +225,12 @@
   callee: ((identifier) @type
     (#match? @type "^_?\\p{Lu}")))
 
+; Builtin initializer
+(call_expression
+  callee: ((identifier) @type.builtin
+    (#any-of? @type.builtin "Any" "String" "Int" "Float" "Bool" "Nothing" "Result" "Error")
+    (#is-not? local)))
+
 ; Builtin functions
 ; https://github.com/klarlanguage/klar/tree/main/internal/analysis/builtin.go
 ((identifier) @function.builtin
