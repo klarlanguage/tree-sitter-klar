@@ -172,6 +172,10 @@
   (#any-of? @type.builtin "Any" "String" "Int" "Float" "Bool" "Nothing" "Result" "Error")
   (#is-not? local))
 
+(qualified_type_alias
+  namespace: (_) @namespace
+  name: (_) @type)
+
 ; Declarations
 ; ========
 (struct_declaration

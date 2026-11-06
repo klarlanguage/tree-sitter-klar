@@ -200,6 +200,10 @@
         "named": true
       },
       {
+        "type": "qualified_type_alias",
+        "named": true
+      },
+      {
         "type": "tuple_type",
         "named": true
       },
@@ -1856,6 +1860,32 @@
           "named": true
         }
       ]
+    }
+  },
+  {
+    "type": "qualified_type_alias",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "type_alias",
+            "named": true
+          }
+        ]
+      },
+      "namespace": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {

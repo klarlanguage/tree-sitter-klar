@@ -5141,6 +5141,10 @@
         {
           "type": "SYMBOL",
           "name": "lambda_type"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "qualified_type_alias"
         }
       ]
     },
@@ -5419,6 +5423,31 @@
       },
       "named": true,
       "value": "type_alias"
+    },
+    "qualified_type_alias": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "namespace",
+          "content": {
+            "type": "SYMBOL",
+            "name": "identifier"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "."
+        },
+        {
+          "type": "FIELD",
+          "name": "name",
+          "content": {
+            "type": "SYMBOL",
+            "name": "type_alias"
+          }
+        }
+      ]
     },
     "identifier": {
       "type": "PATTERN",
@@ -5724,6 +5753,10 @@
     [
       "expression",
       "type_alias"
+    ],
+    [
+      "expression",
+      "qualified_type_alias"
     ],
     [
       "expression",

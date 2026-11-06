@@ -89,6 +89,7 @@ export default grammar({
         [$.type_alias, $._identifier_or_discard],
         [$.expression, $.destructure, $.type_alias],
         [$.expression, $.type_alias],
+        [$.expression, $.qualified_type_alias],
         [$.expression, $.type_alias, $._identifier_or_discard],
         // Lambda expressions create a whole lot of conflicts
         [$.lambda_expression, $.tuple_destructure],
@@ -727,7 +728,8 @@ export default grammar({
                 $.list_type,
                 $.map_type,
                 $.tuple_type,
-                $.lambda_type
+                $.lambda_type,
+                $.qualified_type_alias
             ),
         type_or_rest: $ => choice(seq('...', $.type), $.type),
         map_type: $ => seq('#{', field('key', $.type), ':', field('value', $.type), '}'),
@@ -750,6 +752,8 @@ export default grammar({
             prec(Precedence.GenericType, seq($.type, '<', commaSep1($.type, true), '>')),
         optional_type: $ => prec(Precedence.OptionalType, seq($.type, '?')),
         type_alias: $ => alias($.identifier, $.type_alias),
+        qualified_type_alias: $ =>
+            seq(field('namespace', $.identifier), '.', field('name', $.type_alias)),
 
         identifier: () => /[\p{L}_][\p{L}\p{N}_]*/u,
         _identifier_or_discard: $ => choice($.identifier, alias('_', $.identifier)),
