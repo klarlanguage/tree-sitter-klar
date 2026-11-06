@@ -345,7 +345,7 @@ export default grammar({
                 'import',
                 field('path', sep1($.identifier, '.')),
                 optional(choice($.unqualified_imports, seq('.', '*'))),
-                optional(seq('as', field('alias', $.identifier)))
+                optional(seq('as', field('alias', $._identifier_or_discard)))
             ),
         unqualified_imports: $ =>
             seq(

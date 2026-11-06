@@ -276,4 +276,4 @@
     (#match? @type "^_?\\p{Lu}")))
 
 (import_statement
-  path: (identifier) @namespace)
+  (identifier) @namespace)

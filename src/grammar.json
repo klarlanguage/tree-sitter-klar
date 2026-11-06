@@ -2137,7 +2137,7 @@
                   "name": "alias",
                   "content": {
                     "type": "SYMBOL",
-                    "name": "identifier"
+                    "name": "_identifier_or_discard"
                   }
                 }
               ]
